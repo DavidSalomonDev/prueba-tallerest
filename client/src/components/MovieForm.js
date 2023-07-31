@@ -1,10 +1,13 @@
 import React, {useState} from "react";
 import styled from "styled-components";
 import {handleSubmit} from "../api/Api";
+import {ToastContainer, toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const FormWrapper = styled.div`
   max-width: 400px;
   margin: 0 auto;
+
 `;
 
 const FormField = styled.div`
@@ -37,6 +40,7 @@ const ErrorMessage = styled.div`
 `;
 
 const MovieForm = () => {
+    const notify = () => toast("La película ha sido enviada con éxito.");
     // Estado de los campos del formulario
     const [formData, setFormData] = useState({
         name: "",
@@ -66,25 +70,25 @@ const MovieForm = () => {
 
         // Revisa si el nombre está vacío
         if (!formData.name.trim()) {
-            formErrors.name = "El nombre es obligatorio";
+            formErrors.name = "*El nombre es obligatorio";
             valid = false;
         }
 
         // Revisa si la fecha está vacía
         if (!formData.date.trim()) {
-            formErrors.date = "La fecha de estreno es obligatoria";
+            formErrors.date = "*La fecha de estreno es obligatoria";
             valid = false;
         }
 
         // La duración debe de ser un número
-        if (formData.duration !== "" && isNaN(formData.duration) || formData.duration < 0) {
-            formErrors.duration = "La duración debe ser un número mayor a 0";
+        if (!formData.duration.trim() || formData.duration < 0) {
+            formErrors.duration = "*La duración debe ser un número mayor a 0";
             valid = false;
         }
 
         // El presupuesto debe ser un número
-        if (formData.budget !== "" && isNaN(formData.budget) || formData.duration < 0) {
-            formErrors.budget = "El presupuesto debe ser un número mayor a 0";
+        if (!formData.budget.trim() || formData.duration < 0) {
+            formErrors.budget = "*El presupuesto debe ser un número mayor a 0";
             valid = false;
         }
 
@@ -97,6 +101,13 @@ const MovieForm = () => {
         if (isFormValid) {
             try {
                 await handleSubmit(formData);
+                notify();
+                setFormData({
+                    name: "",
+                    date: "",
+                    duration: "",
+                    budget: ""
+                })
             } catch (error) {
                 console.error("Error submitting data:", error);
             }
@@ -119,7 +130,7 @@ const MovieForm = () => {
             <FormField>
                 <Label>Fecha de estreno:</Label>
                 <Input
-                    type="text"
+                    type="date"
                     name="date"
                     value={formData.date}
                     onChange={handleChange}
@@ -147,6 +158,7 @@ const MovieForm = () => {
                 {errors.budget && <ErrorMessage>{errors.budget}</ErrorMessage>}
             </FormField>
             <Button onClick={handleFormSubmit}>Guardar</Button>
+            <ToastContainer/>
         </FormWrapper>
     );
 };

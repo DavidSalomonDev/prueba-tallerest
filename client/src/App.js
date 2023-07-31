@@ -3,7 +3,7 @@ import MovieForm from "./components/MovieForm";
 
 function App() {
     return (
-        <div>
+        <div className='App'>
             <h1 className='header'>Películas</h1>
             <MovieForm/>
         </div>
